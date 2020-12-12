@@ -220,8 +220,11 @@ export default {
     // 修改品牌
      putTrademark() {
       const { id } = this;
-      // this.TableDataList.filter((table) => table.id === id);
-       this.$API.trademark.updatePageList(this.Trademark);
+      // this.TableDataList.filter((table) => table.logoUrl === logoUrl);
+      const Trademark = this.Trademark
+      Trademark.id = id
+       this.$API.trademark.updatePageList(Trademark);
+       console.log(Trademark)
       this.PageList(this.page, this.limit);
       this.isVisible = false;
     },
