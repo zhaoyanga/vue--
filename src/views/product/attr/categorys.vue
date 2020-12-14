@@ -76,6 +76,7 @@ export default {
       const result = await this.$API.attrList.category2Id(cartList1Id);
       if (result.code === 200) {
         this.cartList2List = result.data;
+        this.$emit("clear")
       } else {
         this.$message.error(result.message);
       }
@@ -88,6 +89,7 @@ export default {
       const result = await this.$API.attrList.category3Id(cartList2Id);
       if (result.code === 200) {
         this.cartList3List = result.data;
+        this.$emit("clear")
       } else {
         this.$message.error(result.message);
       }

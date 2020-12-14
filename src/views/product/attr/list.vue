@@ -1,9 +1,13 @@
 <template>
   <div>
-    <Categorys @change="getAttrList" :disabled="!isShow" />
+    <Categorys @change="getAttrList" @clear="clear" :disabled="!isShow" />
 
     <el-card v-show="isShow" style="margin-top: 20px">
-      <el-button type="primary" icon="el-icon-plus" @click="isShow = false"
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        @click="addAttr"
+        :disabled="!category.category3Id"
         >添加属性</el-button
       >
 
@@ -33,12 +37,17 @@
               size="mini"
               @click="update(row)"
             ></el-button>
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              @click="delattrList(row)"
-            ></el-button>
+            <el-popconfirm
+              title="确定要删除这段内容嘛"
+              @onConfirm="delattrList(row)"
+            >
+              <el-button
+                slot="reference"
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+              ></el-button>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -101,7 +110,6 @@
       >
       <el-button @click="isShow = true">取消</el-button>
     </el-card>
-
   </div>
 </template>
 
@@ -117,9 +125,26 @@ export default {
         attrName: "",
         attrValueList: [],
       },
+      category: {
+        // 代表三个分类id
+        category1Id: "",
+        category2Id: "",
+        category3Id: "",
+      },
     };
   },
   methods: {
+    // 自定义事件，当切换1级和2级分类时，让按钮禁用和展示的数据清空。
+    clear() {
+      (this.category.category3Id = ""), (this.attrList = []);
+    },
+
+    // 点击添加属性，把里面的值清空
+    addAttr() {
+      this.isShow = false;
+      this.attr.attrName = "";
+      this.attr.attrValueList = [];
+    },
     // 删除属性
     async delattrList(row) {
       const result = await this.$API.attrList.deleteAttr(row.id);
@@ -139,7 +164,16 @@ export default {
     },
     // 保存功能
     async AttrInfo() {
-      const result = await this.$API.attrList.saveAttrInfo(this.attr);
+      // 变成布尔值,有id就是false，没有就是true
+      const isAdd = !this.attr.id;
+      const data = this.attr;
+      // 判断有没有id
+      if (isAdd) {
+        // 没有的话就是添加，添加两个属性进去
+        data.categoryId = this.category.category3Id;
+        data.categoryLevel = 3;
+      }
+      const result = await this.$API.attrList.saveAttrInfo(data);
       if (result.code === 200) {
         this.$message.success("更新属性成功");
         this.isShow = true;
