@@ -2,16 +2,26 @@ import request from '@/utils/request'
 
 export default {
 
+    
   /* 
   查找一级分类列表
   */
+  // getCategorys1() {
+  //   /* return request({
+  //     url: '/admin/product/getCategory1',
+  //     method: 'get'
+  //   }) */
+  //   // 修改为request.xxx()
+  //   return request.get('/admin/product/getCategory1')
+  // },
+
   getCategorys1() {
-    /* return request({
+    return request({
       url: '/admin/product/getCategory1',
-      method: 'get'
-    }) */
+      method: 'GET'
+    })
     // 修改为request.xxx()
-    return request.get('/admin/product/getCategory1')
+    // return request.get('/admin/product/getCategory1')
   },
 
   /* 
