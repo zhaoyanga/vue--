@@ -7,3 +7,4 @@ export {default as clientUser} from './clientUser'
 export {default as order} from './order'
 export {default as trademark} from "./trademark"
 export {default as attrList} from "./trademark/attrList"
+export {default as supList} from "./supList"

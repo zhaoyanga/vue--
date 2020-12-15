@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Categorys @change="getAttrList" @clear="clear" :disabled="!isShow" />
+    <!-- 自定义事件的方式 -->
+    <!-- <Categorys @change="getAttrList" @clear="clear" :disabled="!isShow" /> -->
+
+    <!-- 全局事件总线 -->
+    <Categorys :disabled="!isShow" />
 
     <el-card v-show="isShow" style="margin-top: 20px">
       <el-button
@@ -60,7 +64,11 @@
           <el-input v-model="attr.attrName"></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" icon="el-icon-plus" @click="addAttrList"
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        @click="addAttrList"
+        :disabled="!attr.attrName"
         >添加属性</el-button
       >
 
@@ -70,6 +78,7 @@
         <el-table-column label="属性值名称">
           <template v-slot="{ row, $index }">
             <!-- 事件修饰符: native 
+            
                   .native
                   专门给组件绑定事件使用的
                   会给组件中的第一个标签绑定相应的原生DOM事件
@@ -114,7 +123,7 @@
 </template>
 
 <script>
-import Categorys from "./categorys";
+import Categorys from "../../../components/Category";
 export default {
   name: "AttrList",
   data() {
@@ -144,6 +153,7 @@ export default {
       this.isShow = false;
       this.attr.attrName = "";
       this.attr.attrValueList = [];
+      this.attr.id = "";
     },
     // 删除属性
     async delattrList(row) {
@@ -164,6 +174,7 @@ export default {
     },
     // 保存功能
     async AttrInfo() {
+      // console.log(this.attr)
       // 变成布尔值,有id就是false，没有就是true
       const isAdd = !this.attr.id;
       const data = this.attr;
@@ -226,6 +237,15 @@ export default {
       }
       // console.log(this.attrList);
     },
+  },
+  mounted() {
+    this.$bus.$on("change", this.getAttrList);
+    this.$bus.$on("clear", this.clear);
+  },
+  beforeDestroy(){
+    // 通常情况下，清除绑定的全局事件
+    this.$bus.$off("change",this.getAttrList)
+    this.$bus.$off("clear",this.clear)
   },
   components: {
     Categorys,
