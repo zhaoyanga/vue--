@@ -40,11 +40,11 @@ export default {
 	/* 
   更新Sup
   */
-	updateSpu(spuInfo) {
+	updateSpu(spu) {
 		return request({
 			url: `${api_name}/updateSpuInfo`,
 			method: 'POST',
-			data: spuInfo
+			data: spu
 		});
 	},
 

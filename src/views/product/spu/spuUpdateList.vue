@@ -140,9 +140,7 @@ export default {
       SaleattrValue: "",
       rules: {
         spuName: [{ required: true, message: "请输入SPU名称" }],
-        tmId: [
-          { required: true, message: "请选择品牌名称",},
-        ],
+        tmId: [{ required: true, message: "请选择品牌名称" }],
         description: [{ required: true, message: "请输入SPU名称" }],
         imagesUrl: [{ validator: this.imagesUrl, required: true }],
         sa: [{ validator: this.spuSaleAttr, required: true }],
@@ -223,7 +221,6 @@ export default {
           baseSaleAttrId: row.baseSaleAttrId,
           saleAttrName: row.saleAttrName,
           spuId: row.spuId,
-          id: Date.now(),
           saleAttrValueName: this.SaleattrValue,
         });
         this.SaleattrValue = "";
@@ -286,17 +283,19 @@ export default {
           // console.log('校验通过')
           // 收集数据
           const spu = {
-            ...this.spu,
+            ...this.spu, // 展开数据
             spuImageList: this.imageUrl,
             spuSaleAttrList: this.spuSaleAttrList,
           };
-          const result = await this.$API.supList.updateSpu(spu);
-          console.log(result);
-          if (result.code === 200) {
+          let result;
+          if (spu.id) {
+            result = await this.$API.supList.updateSpu(spu);
             this.$emit("getupdata", this.spu.category3Id);
             this.$message.success("修改完成");
           } else {
-            this.$message.error("修改出错");
+            result = await this.$API.supList.saveSpu(spu);
+            this.$emit("getupdata", this.spu.category3Id);
+            this.$message.success("添加完成");
           }
         }
       });
@@ -342,16 +341,18 @@ export default {
     // 获取SPU的销售属性列表
     async getSpuAttrList() {
       const result = await this.$API.supList.getSpuAttrList(this.spu.id);
-      console.log(result.data)
+      // console.log(result.data)
       this.spuSaleAttrList = result.data;
     },
   },
 
   mounted() {
     this.TrademarkList();
-    this.imageSpu();
     this.getSaleAttrList();
-    this.getSpuAttrList();
+    if (this.spu.id) {
+      this.getSpuAttrList();
+      this.imageSpu();
+    }
   },
 };
 </script>

@@ -203,6 +203,7 @@ export default {
               return;
             }
           }
+          console.log(Trademark)
           let result;
           if (isUpdate) {
             result = await this.$API.trademark.updatePageList(this.Trademark);

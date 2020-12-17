@@ -1,49 +1,55 @@
 <template>
-<div>
-  <el-card style="margin-top: 20px">
-    <el-button
-      type="primary"
-      icon="el-icon-plus"
-      :disabled="!category.category3Id"
-      >添加SPU</el-button
-    >
-    <el-table :data="supList" v-loading="loading" border style="width: 100%">
-      <el-table-column type="index" label="序号" width="80" align="center">
-      </el-table-column>
-      <el-table-column label="SPU名称" prop="spuName"> </el-table-column>
+  <div>
+    <el-card style="margin-top: 20px">
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        :disabled="!category.category3Id"
+        @click="$emit('updata', { category3Id: category.category3Id })"
+        >添加SPU</el-button
+      >
+      <el-table :data="supList" v-loading="loading" border style="width: 100%">
+        <el-table-column type="index" label="序号" width="80" align="center">
+        </el-table-column>
+        <el-table-column label="SPU名称" prop="spuName"> </el-table-column>
 
-      <el-table-column label="SPU描述" prop="description"></el-table-column>
+        <el-table-column label="SPU描述" prop="description"></el-table-column>
 
-      <el-table-column label="操作" v-slot="{ row }">
-        <el-button type="primary" icon="el-icon-plus" size="mini"></el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-edit"
-          size="mini"
-          @click="$emit('updata', row)"
-        ></el-button>
-        <el-button type="info" icon="el-icon-info" size="mini"></el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          @click="deleteSpu(row)"
-        ></el-button>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      class="pagination"
-      @size-change="handleSizeChange(limit)"
-      @current-change="handleCurrentChange(page)"
-      :pager-count="5"
-      :page-size.sync="limit"
-      :current-page.sync="page"
-      layout="prev, pager, next, jumper,sizes,total"
-      :total="total"
-      :page-sizes="[3, 6, 9]"
-    >
-    </el-pagination>
-  </el-card>
+        <el-table-column label="操作" v-slot="{ row }">
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="$emit('showSpuList', { ...row, ...category })"
+          ></el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="$emit('updata', row)"
+          ></el-button>
+          <el-button type="info" icon="el-icon-info" size="mini"></el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteSpu(row)"
+          ></el-button>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="pagination"
+        @size-change="handleSizeChange(limit)"
+        @current-change="handleCurrentChange(page)"
+        :pager-count="5"
+        :page-size.sync="limit"
+        :current-page.sync="page"
+        layout="prev, pager, next, jumper,sizes,total"
+        :total="total"
+        :page-sizes="[3, 6, 9]"
+      >
+      </el-pagination>
+    </el-card>
   </div>
 </template>
 
@@ -65,17 +71,14 @@ export default {
     };
   },
   methods: {
-    show() {
-
-    },
     // 删除
-     deleteSpu(row) {
+    deleteSpu(row) {
       // console.log(row);
       const { id } = row;
       // console.log(row)
       this.$API.supList.deleteSpu(id);
       // console.log(result);
-      this.getSpuList(this.page,this.limit)
+      this.getSpuList(this.page, this.limit);
     },
 
     // 获取spu分类列表
