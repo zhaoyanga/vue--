@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "SkuList",
   props: {
@@ -95,6 +96,11 @@ export default {
       attrList: [],
       sku: {},
     };
+  },
+  computed: {
+    ...mapState({
+      category: (state) => state.category.category,
+    }),
   },
   methods: {
     // 获取图片
@@ -111,11 +117,7 @@ export default {
 
     // 获取品牌对应数据
     async getAttrList() {
-      const result = await this.$API.attrList.getAttrList({
-        category1Id: this.spu.category1Id,
-        category2Id: this.spu.category2Id,
-        category3Id: this.spu.category3Id,
-      });
+      const result = await this.$API.attrList.getAttrList(this.category);
       if (result.code === 200) {
         this.attrList = result.data;
         this.$message.success("获取分类对象的属性列表");

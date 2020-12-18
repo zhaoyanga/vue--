@@ -117,11 +117,12 @@
     <el-button type="primary" style="margin-top: 10px" @click="preservation"
       >保存</el-button
     >
-    <el-button @click="$emit('getupdata', spu.category3Id)">取消</el-button>
+    <el-button @click="$emit('getupdata')">取消</el-button>
   </el-card>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "SupUpdateList",
   props: {
@@ -148,6 +149,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      category: (state) => state.category.category,
+    }),
     // 格式化图片数据
     formatImageList() {
       return this.imageUrl.map((img) => {
@@ -284,17 +288,18 @@ export default {
           // 收集数据
           const spu = {
             ...this.spu, // 展开数据
+            category3Id:this.category.category3Id,
             spuImageList: this.imageUrl,
             spuSaleAttrList: this.spuSaleAttrList,
           };
           let result;
           if (spu.id) {
             result = await this.$API.supList.updateSpu(spu);
-            this.$emit("getupdata", this.spu.category3Id);
+            this.$emit("getupdata");
             this.$message.success("修改完成");
           } else {
             result = await this.$API.supList.saveSpu(spu);
-            this.$emit("getupdata", this.spu.category3Id);
+            this.$emit("getupdata");
             this.$message.success("添加完成");
           }
         }

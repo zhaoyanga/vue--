@@ -124,6 +124,7 @@
 
 <script>
 import Categorys from "../../../components/Category";
+import { mapState } from "vuex";
 export default {
   name: "AttrList",
   data() {
@@ -134,13 +135,32 @@ export default {
         attrName: "",
         attrValueList: [],
       },
-      category: {
-        // 代表三个分类id
-        category1Id: "",
-        category2Id: "",
-        category3Id: "",
-      },
+      // category: {
+      //   // 代表三个分类id
+      //   category1Id: "",
+      //   category2Id: "",
+      //   category3Id: "",
+      // },
     };
+  },
+  computed: {
+    ...mapState({
+      category: (state) => state.category.category,
+    }),
+  },
+   watch: {
+    // 监视这个三级id的变化，一旦变化，就发送请求更新数据
+    "category.category3Id"(category3Id) {
+      if(!category3Id) return
+      this.getAttrList();
+    },
+
+    "category.category1Id"() {
+      this.clear();
+    },
+    "category.category2Id"() {
+      this.clear();
+    },
   },
   methods: {
     // 自定义事件，当切换1级和2级分类时，让按钮禁用和展示的数据清空。
@@ -153,7 +173,7 @@ export default {
       this.isShow = false;
       this.attr.attrName = "";
       this.attr.attrValueList = [];
-      this.attr.id = "";
+      // this.attr.id = "";
     },
     // 删除属性
     async delattrList(row) {
@@ -188,7 +208,7 @@ export default {
       if (result.code === 200) {
         this.$message.success("更新属性成功");
         this.isShow = true;
-        this.getAttrList(this.category);
+        this.getAttrList();
       } else {
         this.$message.error("更新数据失败");
       }
@@ -225,10 +245,9 @@ export default {
       this.attr = JSON.parse(JSON.stringify(attr));
     },
 
-    async getAttrList(category) {
+    async getAttrList() {
       // this.attrList = attr;
-      this.category = category;
-      const result = await this.$API.attrList.getAttrList(category);
+      const result = await this.$API.attrList.getAttrList(this.category);
       if (result.code === 200) {
         // 子组件向父组件传参
         this.attrList = result.data;
@@ -239,13 +258,13 @@ export default {
     },
   },
   mounted() {
-    this.$bus.$on("change", this.getAttrList);
-    this.$bus.$on("clear", this.clear);
+    // this.$bus.$on("change", this.getAttrList);
+    // this.$bus.$on("clear", this.clear);
   },
   beforeDestroy(){
     // 通常情况下，清除绑定的全局事件
-    this.$bus.$off("change",this.getAttrList)
-    this.$bus.$off("clear",this.clear)
+    // this.$bus.$off("change",this.getAttrList)
+    // this.$bus.$off("clear",this.clear)
   },
   components: {
     Categorys,

@@ -46,11 +46,12 @@ export default {
       this.item = {...spu}
     },
 
-    getupdata(category3Id) {
+    getupdata(category) {
       this.isShowList = true;
-      this.$nextTick(() => {
-        this.$bus.$emit("change", { category3Id });
-      });
+      // this.$nextTick(() => {
+      //   this.$bus.$emit("change", { category });
+      // });
+      // 通知spuList组件重新发请求
     },
   },
   components: {

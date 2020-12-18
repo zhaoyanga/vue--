@@ -1,15 +1,15 @@
 <template>
   <el-card>
-    <el-form inline :model="cartList" class="demo-form-inline">
+    <el-form inline :model="category">
       <el-form-item label="一级分类">
         <el-select
-          v-model="cartList.category1Id"
+          v-model="category.category1Id"
           placeholder="请选择"
-          @change="handlecartList1"
+          @change="handleSelectChange1"
           :disabled="disabled"
         >
           <el-option
-            v-for="c1 in cartList1List"
+            v-for="c1 in category1List"
             :key="c1.id"
             :label="c1.name"
             :value="c1.id"
@@ -18,13 +18,13 @@
       </el-form-item>
       <el-form-item label="二级分类">
         <el-select
-          v-model="cartList.category2Id"
+          v-model="category.category2Id"
           placeholder="请选择"
-          @change="handlecartList2"
+          @change="handleSelectChange2"
           :disabled="disabled"
         >
           <el-option
-            v-for="c2 in cartList2List"
+            v-for="c2 in category2List"
             :key="c2.id"
             :label="c2.name"
             :value="c2.id"
@@ -33,13 +33,13 @@
       </el-form-item>
       <el-form-item label="三级分类">
         <el-select
-          v-model="cartList.category3Id"
+          v-model="category.category3Id"
           placeholder="请选择"
-          @change="handlecartList3"
+          @change="handleSelectChange3"
           :disabled="disabled"
         >
           <el-option
-            v-for="c3 in cartList3List"
+            v-for="c3 in category3List"
             :key="c3.id"
             :label="c3.name"
             :value="c3.id"
@@ -51,73 +51,62 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapMutations } from "vuex";
+
 export default {
-  name: "Categorys",
+  name: "Category",
+  props: ["disabled"],
   data() {
     return {
-      cartList: {
-        category1Id: "",
+      category: {
+        category1Id: "", // 1级分类id
         category2Id: "",
         category3Id: "",
       },
-      cartList1List: [],
-      cartList2List: [],
-      cartList3List: [],
+      // category1List: [], // 1级分类数据
+      // category2List: [],
+      // category3List: [],
     };
   },
-  props:["disabled"],
+  computed: {
+    ...mapState({
+      category1List: (state) => state.category.category1List,
+      category2List: (state) => state.category.category2List,
+      category3List: (state) => state.category.category3List,
+    }),
+  },
   methods: {
-    // 获取二级分类列表
-    async handlecartList1(cartList1Id) {
-      this.cartList2List = [];
-      this.cartList3List = [];
-      this.cartList.category2Id = "";
-      this.cartList.category3Id = "";
-      const result = await this.$API.attrList.category2Id(cartList1Id);
-      if (result.code === 200) {
-        this.cartList2List = result.data;
-        this.$bus.$emit("clear")
-      } else {
-        this.$message.error(result.message);
-      }
-    },
+    ...mapMutations(["category/SET_CATEGORY3_ID"]),
+    ...mapActions([
+      "category/getCategory1List",
+      "category/getCategory2List",
+      "category/getCategory3List",
+    ]),
+    // 处理输入框的change事件
+    async handleSelectChange1(category1Id) {
+      this.category.category2Id = "";
+      this.category.category3Id = "";
 
-    // 获取三级分类列表
-    async handlecartList2(cartList2Id) {
-      this.cartList3List = [];
-      this.cartList.category3Id = "";
-      const result = await this.$API.attrList.category3Id(cartList2Id);
-      if (result.code === 200) {
-        this.cartList3List = result.data;
-        this.$bus.$emit("clear")
-      } else {
-        this.$message.error(result.message);
-      }
+      this["category/getCategory2List"](category1Id);
+      // 清空父组件的数据
+      // this.$bus.$emit("clearList");
     },
+    async handleSelectChange2(category2Id) {
+      this.category.category3Id = "";
 
-    // 获取分类对象的属性列表
-    async handlecartList3(category3Id) {
-      const category = {
-        ...this.cartList,
-        category3Id,
-      };
-      //   console.log(attrlist);
-      this.$bus.$emit("change",category);
-      
-      // console.log(result);
+      this["category/getCategory3List"](category2Id);
+      // 清空父组件的数据
+      // this.$bus.$emit("clearList");
+    },
+    async handleSelectChange3(category3Id) {
+      this["category/SET_CATEGORY3_ID"](category3Id);
     },
   },
   async mounted() {
-    // 获取一级分类列表
-    const result = await this.$API.attrList.category1Id();
-    if (result.code === 200) {
-      this.cartList1List = result.data;
-    } else {
-      this.$message.error(result.message);
-    }
+    this["category/getCategory1List"]();
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style>
 </style>

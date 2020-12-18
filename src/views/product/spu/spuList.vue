@@ -54,21 +54,44 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "SpuList",
   data() {
     return {
       page: 1,
       limit: 3,
-      category: {
-        category1Id: "",
-        category2Id: "",
-        category3Id: "",
-      },
+      // category: {
+      //   category1Id: "",
+      //   category2Id: "",
+      //   category3Id: "",
+      // },
       supList: [],
       total: 0,
       loading: false,
     };
+  },
+  computed: {
+    ...mapState({
+      category: (state) => state.category.category,
+    }),
+  },
+  watch: {
+    // 监视这个三级id的变化，一旦变化，就发送请求更新数据
+    "category.category3Id": {
+      handler(category3Id) {
+        if (!category3Id) return;
+        this.getSpuList(this.page, this.limit);
+      },
+      immediate:true  // 一上来就触发一次
+    },
+
+    "category.category1Id"() {
+      this.clear();
+    },
+    "category.category2Id"() {
+      this.clear();
+    },
   },
   methods: {
     // 删除
@@ -112,11 +135,11 @@ export default {
     },
 
     // 处理category的change(当选中三级分类时触发)
-    handleCategoryChange(category) {
-      // 触发事件，会将分类id传递过来
-      this.category = category;
-      this.getSpuList(this.page, this.limit);
-    },
+    // handleCategoryChange(category) {
+    //   // 触发事件，会将分类id传递过来
+    //   // this.category = category;
+    //   this.getSpuList(this.page, this.limit);
+    // },
 
     // 当选择1级分类和2级分类id情空
     clear() {
@@ -124,17 +147,16 @@ export default {
       this.page = 1;
       this.limit = 3;
       this.total = 0;
-      this.category.category3Id = "";
     },
   },
   mounted() {
-    this.$bus.$on("change", this.handleCategoryChange);
-    this.$bus.$on("clear", this.clear);
+    // this.$bus.$on("change", this.handleCategoryChange);
+    // this.$bus.$on("clear", this.clear);
   },
   beforeDestroy() {
     // 通常情况下，清除绑定的全局事件
-    this.$bus.$off("change", this.handleCategoryChange);
-    this.$bus.$off("clear", this.clear);
+    // this.$bus.$off("change", this.handleCategoryChange);
+    // this.$bus.$off("clear", this.clear);
   },
 };
 </script>
