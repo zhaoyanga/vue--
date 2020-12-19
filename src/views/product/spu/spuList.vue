@@ -8,7 +8,7 @@
         @click="$emit('updata', { category3Id: category.category3Id })"
         >添加SPU</el-button
       >
-      <el-table :data="supList" v-loading="loading" border style="width: 100%">
+      <el-table :data="spuList" v-loading="loading" border style="width: 100%">
         <el-table-column type="index" label="序号" width="80" align="center">
         </el-table-column>
         <el-table-column label="SPU名称" prop="spuName"> </el-table-column>
@@ -28,7 +28,12 @@
             size="mini"
             @click="$emit('updata', row)"
           ></el-button>
-          <el-button type="info" icon="el-icon-info" size="mini"></el-button>
+          <el-button
+            type="info"
+            icon="el-icon-info"
+            size="mini"
+            @click="information(row)"
+          ></el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
@@ -50,6 +55,18 @@
       >
       </el-pagination>
     </el-card>
+
+    <el-dialog :visible.sync="Visible" width="50%">
+      <el-table style="width: 100%" :data="skuList" v-loading="loading">
+        <el-table-column label="名称" prop="skuName"> </el-table-column>
+        <el-table-column label="价格" prop="price"> </el-table-column>
+        <el-table-column label="重量" prop="weight"> </el-table-column>
+        <el-table-column label="默认图片" prop="skuDefaultImg">
+          <template v-slot="{row}"> <img style="width:100%;height:100px" :src="row.skuDefaultImg" alt="图片"></template>
+         
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -61,14 +78,11 @@ export default {
     return {
       page: 1,
       limit: 3,
-      // category: {
-      //   category1Id: "",
-      //   category2Id: "",
-      //   category3Id: "",
-      // },
-      supList: [],
+      spuList: [],
       total: 0,
       loading: false,
+      Visible: false,
+      skuList:[]
     };
   },
   computed: {
@@ -83,7 +97,7 @@ export default {
         if (!category3Id) return;
         this.getSpuList(this.page, this.limit);
       },
-      immediate:true  // 一上来就触发一次
+      immediate: true, // 一上来就触发一次
     },
 
     "category.category1Id"() {
@@ -94,6 +108,21 @@ export default {
     },
   },
   methods: {
+    // 查看信息
+    async information(row) {
+      this.Visible = true;
+      this.loading = true
+      const spuId = row.id;
+      console.log(spuId)
+      const result = await this.$API.sku.getSkuAttrList(spuId);
+      if(result.code === 200){
+        this.skuList = result.data
+        this.loading = false
+        this.$message.success("获取信息成功")
+      }
+      console.log(result)
+    },
+
     // 删除
     deleteSpu(row) {
       // console.log(row);
@@ -115,9 +144,9 @@ export default {
       });
       if (result.code === 200) {
         this.$message.success("获取SPU数据成功");
-        // console.log(result.data)
+        // console.log(result.data);
         this.total = result.data.total;
-        this.supList = result.data.records;
+        this.spuList = result.data.records;
       } else {
         this.$message.error(result.message);
       }
@@ -143,7 +172,7 @@ export default {
 
     // 当选择1级分类和2级分类id情空
     clear() {
-      this.supList = [];
+      this.spuList = [];
       this.page = 1;
       this.limit = 3;
       this.total = 0;

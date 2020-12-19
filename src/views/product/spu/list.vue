@@ -5,10 +5,10 @@
       clearList 当1级分类2级分类触发的时候触发的，清空列表
       :disabled 决定select是否可以使用
      -->
-     <SkuList v-if="isShow" :spuItem="spuItem" />
+     <SkuList v-if="isShow" :spuItem="spuItem" @getupdata="getupdata" />
      <div v-else>
     <Categoty :disabled="!isShowList" />
-    <SpuList v-if="isShowList" @updata="updata" @showSpuList="showSpuList"/>
+    <SpuList v-if="isShowList" @updata="updata" @showSpuList="showSpuList" />
     <SpuUpdateList
       v-else
       :item="item"
@@ -30,7 +30,7 @@ export default {
       isShowList: true,
       item: [],
       isShow:false,
-      spuItem:{}
+      spuItem:{},
     };
   },
   methods: {
@@ -46,13 +46,18 @@ export default {
       this.item = {...spu}
     },
 
-    getupdata(category) {
+    getupdata() {
       this.isShowList = true;
+      this.isShow = false
       // this.$nextTick(() => {
       //   this.$bus.$emit("change", { category });
       // });
       // 通知spuList组件重新发请求
     },
+  },
+  // 在销毁后，调用mutations函数，清空所有id
+  beforeDestroy() {
+    this.$store.commit("category/RESET_CATEGORY_ID");
   },
   components: {
     Categoty,

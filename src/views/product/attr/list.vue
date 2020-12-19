@@ -261,10 +261,9 @@ export default {
     // this.$bus.$on("change", this.getAttrList);
     // this.$bus.$on("clear", this.clear);
   },
+  // 在销毁后，调用mutations函数，清空所有id
   beforeDestroy(){
-    // 通常情况下，清除绑定的全局事件
-    // this.$bus.$off("change",this.getAttrList)
-    // this.$bus.$off("clear",this.clear)
+    this.$store.commit("category/RESET_CATEGORY_ID");
   },
   components: {
     Categorys,

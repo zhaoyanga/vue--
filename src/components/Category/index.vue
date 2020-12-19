@@ -57,11 +57,13 @@ export default {
   name: "Category",
   props: ["disabled"],
   data() {
+    const category = this.$store.state.category.category;
+    // console.log(category)
     return {
       category: {
-        category1Id: "", // 1级分类id
-        category2Id: "",
-        category3Id: "",
+        category1Id: category.category1Id, // 1级分类id
+        category2Id: category.category2Id,
+        category3Id: category.category3Id,
       },
       // category1List: [], // 1级分类数据
       // category2List: [],
@@ -73,6 +75,7 @@ export default {
       category1List: (state) => state.category.category1List,
       category2List: (state) => state.category.category2List,
       category3List: (state) => state.category.category3List,
+      // category:(state) => state.category.category
     }),
   },
   methods: {

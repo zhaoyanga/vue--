@@ -86,5 +86,8 @@ export default {
 			url: `${api_name}/baseSaleAttrList`,
 			method: 'GET'
 		});
-	}
+	},
+
+	
+	
 };
