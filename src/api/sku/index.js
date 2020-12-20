@@ -18,11 +18,27 @@ export default {
 		});
 	},
 
-	// /admin/product/list/{page}/{limit}
 
 	getSkuAttrValueList(page,limit) {
 		return request({
-			url:`${api_name}/list/${page}/${limit}`
+			url:`${api_name}/list/${page}/${limit}`,
+			method: 'GET'
+		})
+	},
+
+	deleteSku(skuId) {
+		return request({
+			url:`${api_name}/deleteSku/${skuId}`,
+			method: 'DELETE'
+		})
+	},
+
+	getSkuById(skuId) {
+		return request({
+			url:`${api_name}/getSkuById/${skuId}`,
+			method: 'GET'
 		})
 	}
+	// onSale/{skuId} 上架
+	// cancelSale/{skuId} 下架
 };
